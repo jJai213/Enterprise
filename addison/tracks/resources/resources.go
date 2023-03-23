@@ -2,9 +2,8 @@ package resources
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
-	"strconv"
-	"tracks/evaluate"
 	"tracks/repository"
 
 	"github.com/gorilla/mux"
@@ -35,8 +34,7 @@ func readCell(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 	if c, n := repository.Read(id); n > 0 {
-		x := evaluate.Evaluate(c.Audio)
-		d := repository.Cell{Id: c.Id, Audio: strconv.Itoa(x)}
+		d := repository.Cell{Id: c.Id, Audio: c.Audio}
 		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(d)
 	} else if n == 0 {
@@ -60,14 +58,13 @@ func deleteCell(w http.ResponseWriter, r *http.Request) {
 
 func listCell(w http.ResponseWriter, r *http.Request) {
 	if c, n := repository.ReadAll(); n > 0 {
-		names := make([]string, len(c))
+		names := []string{}
 		for _, cell := range c {
 			names = append(names, cell.Id)
+			fmt.Println(names)
 		}
 		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(names)
-	} else if n == 0 {
-		w.WriteHeader(404)
 	} else {
 		w.WriteHeader(500)
 	}
@@ -76,10 +73,10 @@ func listCell(w http.ResponseWriter, r *http.Request) {
 func Router() http.Handler {
 	r := mux.NewRouter()
 
-	r.HandleFunc("/cells/{id}", addCell).Methods("PUT")
-	r.HandleFunc("/cells/", listCell).Methods("GET")
-	r.HandleFunc("/cells/{id}", readCell).Methods("GET")
-	r.HandleFunc("/cells/{id}", deleteCell).Methods("DELETE")
+	r.HandleFunc("/tracks/{id}", addCell).Methods("PUT")
+	r.HandleFunc("/tracks", listCell).Methods("GET")
+	r.HandleFunc("/tracks/{id}", readCell).Methods("GET")
+	r.HandleFunc("/tracks/{id}", deleteCell).Methods("DELETE")
 
 	return r
 

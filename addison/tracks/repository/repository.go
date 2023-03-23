@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -14,7 +15,7 @@ type Repository struct {
 var repo Repository
 
 func Init() {
-	if db, err := sql.Open("sqlite3", "/tmp/test.db"); err == nil {
+	if db, err := sql.Open("sqlite3", "cells.db"); err == nil {
 		repo = Repository{DB: db}
 	} else {
 		log.Fatal("Database Cannot Be Initialised")
@@ -25,6 +26,7 @@ func Create() int {
 	const sql = "CREATE TABLE IF NOT EXISTS Cells" +
 		"(id TEXT PRIMARY KEY, audio TEXT)"
 	if _, err := repo.DB.Exec(sql); err == nil {
+		fmt.Println("data base created")
 		return 0
 	} else {
 		return -1
