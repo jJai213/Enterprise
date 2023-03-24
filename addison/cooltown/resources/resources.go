@@ -18,22 +18,17 @@ func cooltown(w http.ResponseWriter, r *http.Request) {
 			request := map[string]interface{} {"Audio" : audio}
 			if marsh, err := json.Marshal(request); err == nil {
 				data := bytes.NewBuffer(marsh)
-				if search_responce, err := http.Post("http://127.0.0.1:3001/search", "application/json", data); err == nil {
+				if search_responce, err := http.Post("http://localhost:3008/search", "application/json", data); err == nil {
 					if search_responce.StatusCode == http.StatusOK {
 						defer search_responce.Body.Close()
 						search_body := map[string]interface{} {}
 						if err := json.NewDecoder(search_responce.Body).Decode(&search_body); err == nil {
 							if sid, err := search_body["Id"]; err {
-								searchurl := "http://127.0.0.1:3000/tracks/" + strings.Replace(sid.(string), " ", "+", -1)
+								searchurl := "http://localhost:3009/tracks/" + strings.Replace(sid.(string), " ", "+", -1)
 								url_responce, err := http.Get(searchurl)
-
-								if err != nil {
-									
-								}
-
+								if err != nil {}
 								if url_responce.StatusCode == http.StatusOK {
 									defer url_responce.Body.Close()
-
 									url_body := map[string]interface{} {}
 									if err := json.NewDecoder(url_responce.Body).Decode(&url_body); err == nil {
 										if url_audio, err := url_body["Audio"]; err {
@@ -54,7 +49,7 @@ func cooltown(w http.ResponseWriter, r *http.Request) {
 									
 
 								} else {
-									w.WriteHeader(url_responce.StatusCode)
+									w.WriteHeader(404)
 								}
 
 							} else {

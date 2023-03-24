@@ -51,7 +51,7 @@ func search(w http.ResponseWriter, r *http.Request) {
 						w.WriteHeader(500)
 					}
 				} else {
-					w.WriteHeader(404)
+					w.WriteHeader(500)
 				} 
 			} else {
 				w.WriteHeader(500)
